@@ -1,0 +1,26 @@
+# Node
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# Runtime state this plugin writes under $DSH_HOME/wallpaper/
+# (listed here so a checkout that doubles as the live plugin dir stays clean)
+index.json
+images/
+trace.log
+client-probe.json
+probe-report.json
+
+# Local test leftovers
+*.log
+_test.*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Packed artifacts
+*.tgz

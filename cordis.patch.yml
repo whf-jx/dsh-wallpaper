@@ -1,0 +1,4 @@
+# dsh-wallpaper bundle patch: inserts its row into the web plugin roster.
+- insert:
+    - id: wallpaper
+      name: dsh-wallpaper

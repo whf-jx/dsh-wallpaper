@@ -1,0 +1,12 @@
+{
+  "name": "dsh-wallpaper",
+  "description": "DSH Web GUI 本地壁纸插件:上传本地图片/视频、手动切换、定时轮换与随机播放,改动实时生效",
+  "version": "0.1.0",
+  "entry": {
+    "name": "dsh-wallpaper",
+    "inject": []
+  },
+  "client": {
+    "platform": "web"
+  }
+}

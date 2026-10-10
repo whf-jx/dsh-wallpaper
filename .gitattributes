@@ -1,0 +1,21 @@
+# Normalize line endings so the checkout is identical on every platform.
+# This plugin ships plain JS/YAML/JSON consumed directly by DSH — no build step.
+* text=auto eol=lf
+
+# Windows-only helpers keep CRLF if ever added
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.mp4 binary
+*.webm binary
+
+# Keep language detection honest for GitHub
+lib/client.js linguist-language=JavaScript
+lib/index.js linguist-language=JavaScript
