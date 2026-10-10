@@ -1,5 +1,7 @@
 # dsh-wallpaper · 本地壁纸插件
 
+中文 | [English](./README.en.md)
+
 为 [DeepSeek Harness](https://github.com/deepseek-ai) Web GUI 提供**本地图片 / 视频壁纸**：上传自己的素材、手动切换、按时间自动轮换，全部在设置界面内完成，改动实时生效。
 
 不依赖任何在线服务，素材只存在本机。
@@ -52,7 +54,7 @@ ln -s ~/.dsh/plugins-src/dsh-wallpaper ~/.dsh/profiles/web/node_modules/dsh-wall
 4）重启 DSH。
 
 > **三处 `id` 必须一致**：patch 的 `id`、插入行的 `name`、客户端 bundle 的 `__ModuleLoader__.load({ id })`。
-> 载体以 `/plugins/<entryName>/client.js` 提供 bundle，不一致会 404。
+> 载体按条目名提供客户端 bundle（前缀随 DSH 版本而变），三处不一致会 404。
 >
 > 本包**零运行时依赖**，不需要 `pnpm install`；profile 的 `package.json` 也无需登记——
 > 模块解析走 `node_modules` 目录本身。
@@ -96,9 +98,9 @@ $DSH_HOME/wallpaper/
 | 方法 | 路径 | 作用 |
 | --- | --- | --- |
 | GET | `/state` | 完整状态 + 存储根路径 |
-| GET | `/revision` | 轻量轮询：只取 revision 与状态，供页面感知后台轮换 |
+| GET | `/revision` | 轻量轮询：**只返回 `revision` 计数**，页面据此决定要不要拉完整状态 |
 | GET | `/image/<id>` | 返回素材字节；**视频支持 Range 请求** |
-| POST | `/upload` | `{ images: [{ name, dataUrl }] }` |
+| POST | `/upload` | `{ images: [{ name, dataUrl }] }`，单次请求体积上限 **96 MB** |
 | POST | `/remove` | `{ id }` |
 | POST | `/select` | `{ id \| null }` |
 | POST | `/step` | `{ delta: 1 \| -1 }` |
@@ -113,13 +115,18 @@ $DSH_HOME/wallpaper/
 - **计时器来自 `timer` 服务**：`ctx.setInterval` 并不存在，须 `inject: ['webServer', 'timer']` 后用 `ctx.timer.interval()`。漏注入会抛错，且异常发生在写盘之后、响应之前，表现为"保存生效但界面报 400"。
 - **`kind` 字段贯穿两层**：Host 的 `publicState` 必须把 `kind`（`image`/`video`）发出，Client 的 `normalizeState` 必须把它映射进 items，否则渲染恒走图片分支。
 - **主题自适应**：深色主题下把 `--dsw-alias-label-primary/secondary/tertiary` 提亮一档，仅在壁纸激活时生效，浅色主题不动。
+- **索引原子写**：`index.json` 用「同目录临时文件 + rename」替换，写入串行化；解析失败时把损坏文件改名为 `index.corrupt-<时间戳>.json` 留证而不是静默清空——索引是素材的唯一清单，丢了它等于丢失整个素材库。
+- **请求体有预算**：控制类路由 1 MB、`/upload` 96 MB。超限时继续排空但不保留字节，因此内存有界，同时客户端能收到明确的 `413`（否则载体只会回一个无信息的 400）。
+- **上传逐个文件进行**：客户端一次只读一个文件并立即上传，峰值内存是单个文件而非全部所选文件之和。
 
 ## ⚠️ 已知限制
 
 - 仅支持 **web** 形态的 DSH GUI（客户端通过 `shell.overlay` 与 `settings.section` 注入）。
+- 单文件上限 **64 MB**（超限的文件会被跳过并提示）；单次请求上限 96 MB。
 - 视频壁纸会持续占用 GPU 解码资源；**建议码率压到 ~8 Mbps**（4 秒 4K 素材常见 50 Mbps 以上，作为常驻壁纸偏重）。
 - 「平铺」对视频无效，自动降级为铺满。
 - 无缩略图生成：视频在素材列表中以 `<video preload="metadata">` 预览（悬停播放）。
+- 删除为**两步确认**（首次点击仅武装该素材，4 秒后自动解除），以防误删大文件。
 
 ## 📄 License
 
