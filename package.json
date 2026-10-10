@@ -49,7 +49,8 @@
     "lib",
     "cordis.patch.yml",
     "dsh.plugin.json",
-    "README.md"
+    "README.md",
+    "README.en.md"
   ],
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
