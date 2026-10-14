@@ -16,6 +16,10 @@ probe-report.json
 *.log
 _test.*
 
+# Local backups of lib files taken before an in-place patch
+*.bak
+*.bak-*
+
 # Editors / OS
 .vscode/
 .idea/
